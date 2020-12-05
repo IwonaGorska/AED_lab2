@@ -54,7 +54,7 @@ def zad2(numberOfClusters = 5):
     # called standardization.Standardization scales, or shifts, the values for each numerical
     # feature in your dataset so that the features have a mean of 0 and standard deviation of 1
 
-    df = zad1()
+    # df = zad1()
     # DF <- data.frame
 
     # dataset, true_labels = make_blobs(
@@ -89,5 +89,21 @@ def zad2(numberOfClusters = 5):
     # plt.scatter(X[:, 0], X[:, 1])
     # plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=300, c='red')
     # plt.show()
+
+    X, y_true = make_blobs(n_samples=1000, centers=numberOfClusters, cluster_std=0.99, random_state=3042019)
+    df = pd.DataFrame(X, columns=['f1', 'f2'])
+    df.head()
+
+    kmeans = KMeans(n_clusters=numberOfClusters)
+    kmeans.fit(df)
+    y_kmeans = kmeans.predict(df)
+
+    df['sklearn_cluster'] = y_kmeans
+    sklearn_centers = kmeans.cluster_centers_
+
+    sns.lmplot(data=df, x='f1', y='f2', fit_reg=False, hue='sklearn_cluster', markers=['o', '*', '+', '^', 'x'],
+               palette=['#10fbbb', '#fbe610', '#eb6c6a', '#6aeb6c', '#6c6aeb']).set(title='Wizualizacja grup')
+    plt.scatter(sklearn_centers[:, 0], sklearn_centers[:, 1], c='black', s=100, alpha=0.5)
+    plt.show()
 
 zad2()
