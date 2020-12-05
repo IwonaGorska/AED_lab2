@@ -23,7 +23,11 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 
 def zad1():
-    dataset = pd.read_csv('Sales_Transactions_Dataset_Weekly.csv', header=True)
+    # normalized = []
+    #Normalized 51 - create strings like that in a loop, push to array and use in 'usecols' maybe
+#usecols=[55, 107]
+    dataset = pd.read_csv('Sales_Transactions_Dataset_Weekly.csv', usecols=[*range(55, 107)])
+    print(dataset)
     pd.DataFrame = dataset
     valueCount = pd.DataFrame.size
     uniqueValueCount = pd.DataFrame.nunique()
@@ -102,7 +106,7 @@ def zad2(numberOfClusters=5):
     print(palette)
     print(markers)
 
-    # df = zad1()  - in the future put this as a parameter into below functions as well
+    # df = zad1() # - in the future put this as a parameter into below functions as well
     kmeans(numberOfClusters, palette, markers)
     kmeans_pp(numberOfClusters, palette, markers)
 
