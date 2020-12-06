@@ -155,6 +155,8 @@ def agglomerativeClustering(metric, numberOfClusters):
     np.random.seed(1)
     x, _ = make_blobs(n_samples=300, centers=numberOfClusters, cluster_std=.8)
 
+    # x = pd.read_csv('Sales_Transactions_Dataset_Weekly.csv', usecols=[*range(55, 107)])
+
     aggloclust = AgglomerativeClustering(n_clusters=numberOfClusters).fit(x)
     print(aggloclust)
 
@@ -163,8 +165,12 @@ def agglomerativeClustering(metric, numberOfClusters):
 
     labels = aggloclust.labels_
 
+    sns.clustermap(x, metric=metric, standard_scale=1, method="single")
+
     plt.scatter(x[:, 0], x[:, 1], c=labels)
+    # plt.scatter(x[:, 0], x[:, 1], c=[])
     plt.show()
+
 
 
 def zad3():
@@ -175,7 +181,7 @@ def zad3():
     distanceMetric = metricks[distanceMetricNr]
     print(distanceMetric)
 
-    # Addirionally user can change also number of clusters
+    # Additionally user can change also number of clusters
     numberOfClusters = int(
         input("Podaj liczbe klastrow lub wciśnij Enter, by przyjąć domyślną wartość (5): ") or 5)
     if numberOfClusters < 1:
