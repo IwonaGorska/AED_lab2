@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, adjusted_rand_score
 from sklearn.pipeline import Pipeline
@@ -53,10 +53,10 @@ def zad1():
     return dataset
 
 
-def kmeans(numberOfClusters, palette, markers):
-    X, y_true = make_blobs(n_samples=1000, centers=numberOfClusters, cluster_std=0.99, random_state=3042019)
-    df = pd.DataFrame(X, columns=['f1', 'f2'])
-    df.head()
+def kmeans(numberOfClusters, palette, markers, df):
+    # X, y_true = make_blobs(n_samples=1000, centers=numberOfClusters, cluster_std=0.99, random_state=3042019)
+    # df = pd.DataFrame(, columns=['f1', 'f2'])
+    # df.head()
 
     print('Zbiór przed klasteryzacją: \n', df)
 
@@ -67,7 +67,7 @@ def kmeans(numberOfClusters, palette, markers):
     df['sklearn_cluster'] = y_kmeans
     sklearn_centers = kmeans.cluster_centers_
 
-    sns.lmplot(data=df, x='f1', y='f2', fit_reg=False, hue='sklearn_cluster', markers=markers,
+    sns.lmplot(data=df,  fit_reg=False, hue='sklearn_cluster', markers=markers,
                palette=palette).set(title='Wizualizacja grup - KMeans')
     plt.scatter(sklearn_centers[:, 0], sklearn_centers[:, 1], c='black', s=100, alpha=0.5)
     plt.show()
@@ -75,10 +75,10 @@ def kmeans(numberOfClusters, palette, markers):
     print('Zbiór po klasteryzacji (kolumna sklearn_cluster to przypisana etykieta klas): \n', df)
 
 
-def kmeans_pp(numberOfClusters, palette, markers):
-    X, y_true = make_blobs(n_samples=1000, centers=numberOfClusters, cluster_std=0.99, random_state=3042019)
-    df = pd.DataFrame(X, columns=['f1', 'f2'])
-    df.head()
+def kmeans_pp(numberOfClusters, palette, markers, df):
+    # X, y_true = make_blobs(n_samples=1000, centers=numberOfClusters, cluster_std=0.99, random_state=3042019)
+    # df = pd.DataFrame(X, columns=['f1', 'f2'])
+    # df.head()
 
     kmeans = KMeans(n_clusters=numberOfClusters, init='k-means++', max_iter=300, n_init=10, random_state=0)
     kmeans.fit(df)
@@ -87,18 +87,18 @@ def kmeans_pp(numberOfClusters, palette, markers):
     df['sklearn_cluster'] = y_kmeans
     sklearn_centers = kmeans.cluster_centers_
 
-    sns.lmplot(data=df, x='f1', y='f2', fit_reg=False, hue='sklearn_cluster', markers=markers,
+    sns.lmplot(data=df,  fit_reg=False, hue='sklearn_cluster', markers=markers,
                palette=palette).set(title='Wizualizacja grup - KMeans++')
     plt.scatter(sklearn_centers[:, 0], sklearn_centers[:, 1], c='black', s=100, alpha=0.5)
     plt.show()
 
 
-def zad2(numberOfClusters=5):
+def zad2():
 
     wholePalette = ['#10fbbb', '#fbe610', '#eb6c6a', '#6aeb6c', '#6c6aeb', '#8b0000', '#002e53', '#fb109e']
     allMarkers = ['o', '*', '+', '^', 'x', 's', 'v', 'w']
     numberOfClusters = int(input("Podaj liczbe klastrow (max 8) lub wciśnij Enter, by przyjąć domyślną wartość (5): ") or 5)
-    if numberOfClusters > 8:
+    if numberOfClusters > 8 or numberOfClusters < 1:
         numberOfClusters = 8
     print(numberOfClusters)
     palette = wholePalette[0:numberOfClusters]
@@ -106,9 +106,9 @@ def zad2(numberOfClusters=5):
     print(palette)
     print(markers)
 
-    # df = zad1() # - in the future put this as a parameter into below functions as well
-    kmeans(numberOfClusters, palette, markers)
-    kmeans_pp(numberOfClusters, palette, markers)
+    df = zad1() # - in the future put this as a parameter into below functions as well
+    kmeans(numberOfClusters, palette, markers, df)
+    kmeans_pp(numberOfClusters, palette, markers, df)
 
     # I’ll use the StandardScaler class . This class implements a type of feature scaling
     # called standardization.Standardization scales, or shifts, the values for each numerical
@@ -151,7 +151,37 @@ def zad2(numberOfClusters=5):
     # plt.show()
 
 
+def agglomerativeClustering(metric, numberOfClusters):
+    np.random.seed(1)
+    x, _ = make_blobs(n_samples=300, centers=numberOfClusters, cluster_std=.8)
+
+    aggloclust = AgglomerativeClustering(n_clusters=numberOfClusters).fit(x)
+    print(aggloclust)
+
+    AgglomerativeClustering(affinity=metric, compute_full_tree='auto',
+                            connectivity=None, linkage='ward', memory=None, n_clusters=numberOfClusters)
+
+    labels = aggloclust.labels_
+
+    plt.scatter(x[:, 0], x[:, 1], c=labels)
+    plt.show()
 
 
+def zad3():
+    metricks = ['euclidean', 'cosine', 'cityblock']
+    distanceMetricNr = int(input("Wybierz numer metryki (domyslnie 0) - 0: euclidean, 1: cosine, 2: cityblock: ") or 0)
+    if distanceMetricNr > 2 or distanceMetricNr < 0:
+        distanceMetricNr = 0
+    distanceMetric = metricks[distanceMetricNr]
+    print(distanceMetric)
 
-zad2()
+    # Addirionally user can change also number of clusters
+    numberOfClusters = int(
+        input("Podaj liczbe klastrow lub wciśnij Enter, by przyjąć domyślną wartość (5): ") or 5)
+    if numberOfClusters < 1:
+        numberOfClusters = 5
+    print(numberOfClusters)
+
+    agglomerativeClustering(distanceMetric, numberOfClusters)
+
+zad3()
